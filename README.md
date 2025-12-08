@@ -29,25 +29,23 @@ Amaç, kullanıcı rolleri ve CRUD temelli işlemlerle gerçek bir yönetim pane
 
 ## 🧱 Klasör Yapısı
 
-manageX_system/
-│
-├── classes/
-│ ├── Database.php
-│ ├── User.php
-│ └── Employee.php
-│
-├── uploads/
-│ └── employees/
-│
-├── index.php
-├── login.php
-├── register.php
-├── employee.php
-├── employee_view.php
-├── appointment.php
-├── appointments_admin.php
-├── users_admin.php
-└── dashboard.php
+- **manageX_system**
+  - **classes/**
+    - `Database.php`  
+    - `User.php`  
+    - `Employee.php`
+  - **uploads/**
+    - `employees/` → Çalışan görselleri burada tutulur.
+  - **Ana dosyalar**
+    - `index.php` → Giriş ekranı  
+    - `login.php` → Giriş işlemleri  
+    - `register.php` → Kayıt olma sayfası  
+    - `employee.php` → Çalışan yönetimi  
+    - `employee_view.php` → Çalışan detay ekranı  
+    - `appointment.php` → Kullanıcı randevu sistemi  
+    - `appointments_admin.php` → Yönetici randevu yönetimi  
+    - `users_admin.php` → Admin kullanıcı yönetimi  
+    - `dashboard.php` → Özet panel ekranı 
 
 ---
 
