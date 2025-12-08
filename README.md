@@ -63,11 +63,9 @@ Amaç, kullanıcı rolleri ve CRUD temelli işlemlerle gerçek bir yönetim pane
 
 ## 🧠 Rollere Göre Yetkiler
 
-| Rol --> Yetkiler |
------------------------
-| 👑 **Admin** --> Tüm kullanıcıları yönetir (CRUD), sistem genelini görebilir. |
-| 🧍 **Manager (Yönetici)** --> Çalışan yönetimi yapabilir, harita paneline erişir. |
-| 🙋 **User (Kullanıcı)** --> Randevu oluşturabilir, doluluk durumunu görebilir. |
+- 👑 **Admin** --> Tüm kullanıcıları yönetir (CRUD), sistem genelini görebilir.
+- 🧍 **Manager (Yönetici)** --> Çalışan yönetimi yapabilir, harita paneline erişir.
+- 🙋 **User (Kullanıcı)** --> Randevu oluşturabilir, doluluk durumunu görebilir.
 
 ---
 
