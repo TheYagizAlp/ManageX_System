@@ -9,11 +9,11 @@ Amaç; **rol bazlı yetkilendirme**, **veri kalıcılığı**, **CRUD işlemleri
 
 ## ⚙️ Kullanılan Teknolojiler
 
-**PHP** --> Backend geliştirme, OOP yapı 
-**MySQL** --> Veritabanı ve veri kalıcılığı 
-**HTML / CSS / JS** --> Arayüz ve etkileşim 
-**Google Maps** --> Harita ve yol tarifi 
-**Git & GitHub** --> Versiyon kontrolü 
+- **PHP** --> Backend geliştirme, OOP yapı 
+- **MySQL** --> Veritabanı ve veri kalıcılığı 
+- **HTML / CSS / JS** --> Arayüz ve etkileşim 
+- **Google Maps** --> Harita ve yol tarifi 
+- **Git & GitHub** --> Versiyon kontrolü 
 
 ---
 
