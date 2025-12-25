@@ -10,6 +10,15 @@ if (!isset($_SESSION["user"])) {
 $user = $_SESSION["user"];
 $role = $user["role"];
 
+$roleNames = [
+    "admin"   => "Yönetici",
+    "manager" => "Çalışan",
+    "user"    => "Misafir"
+];
+
+$roleLabel = $roleNames[$role] ?? $role;
+
+
 $db = new Database();
 $conn = $db->conn;
 
@@ -100,28 +109,37 @@ if ($role === "admin" || $role === "manager") {
 
 <div class="panel">
   <h1>Hoş geldin, <?= htmlspecialchars($user["name"]) ?> 👋</h1>
-  <h2>Rolün: <strong><?= ucfirst($role) ?></strong></h2>
+  <h2>Rolün: <strong><?= $roleLabel ?></strong></h2>
 
   <?php if ($role === "admin" || $role === "manager"): ?>
     <div class="stats">
-      <div class="card"><h3>👥 Kullanıcılar</h3><span><?= $stats['users'] ?></span></div>
-      <div class="card"><h3>🧑‍💼 Çalışanlar</h3><span><?= $stats['employees'] ?></span></div>
-      <div class="card"><h3>⏳ Bekleyen</h3><span><?= $stats['pending'] ?></span></div>
-      <div class="card"><h3>✅ Onaylı</h3><span><?= $stats['approved'] ?></span></div>
+      <div class="card"><h3>👥 Kayıtlı Kullanıcılar</h3><span><?= $stats['users'] ?></span></div>
+      <div class="card"><h3>🧑‍💼 Mevcut Ortaklar</h3><span><?= $stats['employees'] ?></span></div>
+      <div class="card"><h3>⏳ Bekleyen Randevular</h3><span><?= $stats['pending'] ?></span></div>
+      <div class="card"><h3>✅ Onaylı Randevular</h3><span><?= $stats['approved'] ?></span></div>
     </div>
   <?php endif; ?>
 
   <?php if ($role === "admin"): ?>
-    <button onclick="window.location='users_admin.php'">👑 Kullanıcı Yönetimi</button>
+    <!-- admin (yönetici) -->
+    <button onclick="window.location='users_admin.php'">🙋 Misafir Yönetimi</button>
     <button onclick="window.location='appointments_admin.php'">📅 Randevu Yönetimi</button>
-    <button onclick="window.location='employee.php'">👨‍💼 Çalışan Yönetimi</button>
+    <button onclick="window.location='employee.php'">👨‍💼 Ortak Yönetimi</button>
+    <button onclick="window.location='tasks.php'">🧾 Görev Yönetimi</button>
+    <button onclick="window.location='map.php'">🗺️ Şirket Konumu / Yol Tarifi</button>
 
   <?php elseif ($role === "manager"): ?>
-    <button onclick="window.location='employee.php'">👨‍💼 Çalışan Yönetimi</button>
-    <button onclick="window.location='appointments_admin.php'">📅 Randevu Yönetimi</button>
+    <!-- manager (çalışan) -->
+    <button onclick="window.location='appointment.php'">📅 Randevu Al</button>
+    <button onclick="window.location='users_admin.php'">🙋 Misafirleri Gör</button>
+    <button onclick="window.location='tasks.php'">🧾 Görevlerim</button>
+    <button onclick="window.location='map.php'">🗺️ Şirket Konumu / Yol Tarifi</button>
 
   <?php elseif ($role === "user"): ?>
-    <button onclick="window.location='appointment.php'">📅 Randevularım</button>
+    <!-- user (misafir) -->
+    <button onclick="window.location='appointment.php'">📅 Randevu Al</button>
+    <button onclick="window.location='map.php'">🗺️ Şirket Konumu / Yol Tarifi</button>
+    
   <?php endif; ?>
 
   <button class="logout" onclick="window.location='logout.php'">🚪 Çıkış Yap</button>

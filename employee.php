@@ -3,19 +3,47 @@ session_start();
 include_once "classes/Database.php";
 include_once "classes/Employee.php";
 
+if (!isset($_SESSION["user"])) {
+    header("Location: index.php");
+    exit;
+}
+
+$user = $_SESSION["user"];
+$role = $user["role"];
+
+// Misafir giremez
+if ($role === "user") {
+    header("Location: dashboard.php");
+    exit;
+}
+
+// Rol etiketi
+function roleLabel($role) {
+    if ($role === "admin") return "Yönetici";
+    if ($role === "manager") return "Çalışan";
+    return "Misafir";
+}
+
 $db  = new Database();
 $conn = $db->conn;
 $emp = new Employee($conn);
 
-// Çalışan silme
-if (isset($_GET["delete"])) {
-    $id = $_GET["delete"];
-    $conn->query("DELETE FROM employees WHERE id=$id");
+// ===========================
+// Yönetici işlemleri (CRUD)
+// ===========================
+
+// Çalışan silme (sadece admin)
+if (isset($_GET["delete"]) && $role === "admin") {
+    $id = (int)$_GET["delete"];
+    $stmt = $conn->prepare("DELETE FROM employees WHERE id=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
     echo "<script>alert('Çalışan silindi.'); window.location='employee.php';</script>";
+    exit;
 }
 
-// Çalışan ekleme
-if (isset($_POST["create"])) {
+// Çalışan ekleme (sadece admin)
+if (isset($_POST["create"]) && $role === "admin") {
     $name = $_POST["name"];
     $department = $_POST["department"];
     $position = $_POST["position"];
@@ -24,7 +52,11 @@ if (isset($_POST["create"])) {
 
     $photo = $_FILES["photo"]["name"] ?? null;
     if ($photo) {
-        $target = "uploads/employees/" . basename($photo);
+        $targetDir = "uploads/employees/";
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+        $target = $targetDir . basename($photo);
         move_uploaded_file($_FILES["photo"]["tmp_name"], $target);
     }
 
@@ -32,12 +64,13 @@ if (isset($_POST["create"])) {
     $stmt->bind_param("ssssss", $name, $department, $position, $email, $phone, $photo);
     if ($stmt->execute()) {
         echo "<script>alert('Yeni çalışan eklendi.'); window.location='employee.php';</script>";
+        exit;
     }
 }
 
-// Çalışan düzenleme (UPDATE)
-if (isset($_POST["update"])) {
-    $id = $_POST["id"];
+// Çalışan düzenleme (sadece admin)
+if (isset($_POST["update"]) && $role === "admin") {
+    $id = (int)$_POST["id"];
     $name = $_POST["name"];
     $department = $_POST["department"];
     $position = $_POST["position"];
@@ -46,15 +79,23 @@ if (isset($_POST["update"])) {
 
     $photo = $_FILES["photo"]["name"] ?? null;
     if ($photo) {
-        $target = "uploads/employees/" . basename($photo);
+        $targetDir = "uploads/employees/";
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+        $target = $targetDir . basename($photo);
         move_uploaded_file($_FILES["photo"]["tmp_name"], $target);
-        $conn->query("UPDATE employees SET photo='$photo' WHERE id=$id");
+
+        $stmtPhoto = $conn->prepare("UPDATE employees SET photo=? WHERE id=?");
+        $stmtPhoto->bind_param("si", $photo, $id);
+        $stmtPhoto->execute();
     }
 
     $stmt = $conn->prepare("UPDATE employees SET name=?, department=?, position=?, email=?, phone=? WHERE id=?");
     $stmt->bind_param("sssssi", $name, $department, $position, $email, $phone, $id);
     if ($stmt->execute()) {
         echo "<script>alert('Çalışan bilgileri güncellendi.'); window.location='employee.php';</script>";
+        exit;
     }
 }
 
@@ -105,12 +146,31 @@ $rows = $emp->getAll();
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
+    gap: 10px;
   }
 
   .topbar h1 {
     font-size: 24px;
     color: #0f172a;
     margin: 0;
+  }
+
+  .topbar .right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .badge {
+    background: #111827;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0.9;
   }
 
   .btn {
@@ -124,6 +184,20 @@ $rows = $emp->getAll();
     transition: 0.3s;
   }
   .btn:hover { background: #0284c7; }
+
+  .btn.gray {
+    background: #334155;
+  }
+  .btn.gray:hover {
+    background: #1f2937;
+  }
+
+  .btn.red {
+    background: #ef4444;
+  }
+  .btn.red:hover {
+    background: #b91c1c;
+  }
 
   .grid {
     display: grid;
@@ -163,6 +237,7 @@ $rows = $emp->getAll();
     margin-top: 10px;
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
   }
 
   .link {
@@ -178,107 +253,60 @@ $rows = $emp->getAll();
   .danger { background: #ef4444; color: white; }
 
   /* --- Dialog (create & edit) ortak stil --- */
-dialog {
-  max-width: 420px;
-  width: 90%;
-  border: none;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.25);
-}
+  dialog {
+    max-width: 420px;
+    width: 90%;
+    border: none;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    overflow: hidden;
+  }
 
-dialog h3 {
-  margin: 0 0 12px 0;
-  text-align: center;
-  color: #0f172a;
-  font-size: 18px;
-  font-weight: 700;
-}
+  dialog form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-/* Form yerleşimi */
-dialog form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  dialog input[type="text"],
+  dialog input[type="email"],
+  dialog input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+  }
 
-/* Inputlar */
-dialog input[type="text"],
-dialog input[type="email"],
-dialog input[type="password"],
-dialog input[type="file"] {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #f9fafb;
-  font-size: 14px;
-  outline: none;
-  transition: border .2s, box-shadow .2s, background .2s;
-}
-
-dialog input:focus {
-  border-color: #0ea5e9;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(14,165,233,.15);
-}
-
-/* Alt butonlar */
-dialog .actions,
-dialog form > div:last-child {
-  display: flex;
-  gap: 10px;
-  margin-top: 6px;
-}
-
-dialog button[type="submit"],
-dialog button[type="button"] {
-  flex: 1;
-  padding: 10px 12px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform .05s ease, filter .2s ease;
-}
-
-dialog button[type="submit"] {
-  background: #0ea5e9;
-  color: #fff;
-}
-dialog button[type="button"] {
-  background: #ef4444;
-  color: #fff;
-}
-
-dialog button:hover { filter: brightness(.95); }
-dialog button:active { transform: translateY(1px); }
-
-/* Kaydırma çubuğunu engelle */
-dialog::-webkit-scrollbar {
-  display: none;
-}
-
-/* Inputların taşmasını engelle */
-dialog input,
-dialog select,
-dialog button {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-/* Dialog genel overflow düzeltmesi */
-dialog {
-  overflow: hidden;
-}
-
+  dialog input:focus {
+    border-color: #0ea5e9;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(14,165,233,.15);
+  }
 </style>
 </head>
 <body>
     <div class="main">
         <div class="topbar">
-            <h1>Çalışanlar</h1>
-            <button class="btn" onclick="document.getElementById('createDlg').showModal()">+ Yeni Çalışan</button>
+            <h1>Şirket Ortakları</h1>
+
+            <div class="right">
+                <span class="badge">
+                    <?= htmlspecialchars($user["name"]) ?> • <?= roleLabel($role) ?>
+                </span>
+
+                <button class="btn gray" onclick="window.location='dashboard.php'">🡐 Panele Dön</button>
+
+                <?php if ($role === "admin"): ?>
+                    <button class="btn" onclick="document.getElementById('createDlg').showModal()">+ Yeni Ortak</button>
+                <?php endif; ?>
+
+                <button class="btn red" onclick="window.location='logout.php'">🚪 Çıkış</button>
+            </div>
         </div>
 
         <div class="grid">
@@ -294,8 +322,11 @@ dialog {
                         </div>
                         <div class="actions">
                             <button class="link" onclick="window.location='employee_view.php?id=<?= $r['id'] ?>'">Detay</button>
-                            <button class="link" onclick="editEmployee(<?= $r['id'] ?>, '<?= htmlspecialchars($r['name']) ?>', '<?= htmlspecialchars($r['department']) ?>', '<?= htmlspecialchars($r['position']) ?>', '<?= htmlspecialchars($r['email']) ?>', '<?= htmlspecialchars($r['phone']) ?>')">Düzenle</button>
-                            <button class="link danger" onclick="window.location='employee.php?delete=<?= $r['id'] ?>'">Sil</button>
+
+                            <?php if ($role === "admin"): ?>
+                                <button class="link" onclick="editEmployee(<?= $r['id'] ?>, '<?= htmlspecialchars($r['name']) ?>', '<?= htmlspecialchars($r['department']) ?>', '<?= htmlspecialchars($r['position']) ?>', '<?= htmlspecialchars($r['email']) ?>', '<?= htmlspecialchars($r['phone']) ?>')">Düzenle</button>
+                                <button class="link danger" onclick="if(confirm('Silmek istediğine emin misin?')) window.location='employee.php?delete=<?= $r['id'] ?>'">Sil</button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -305,13 +336,18 @@ dialog {
 
     <div class="map">
         <h3 style="text-align:center; margin-bottom:10px;">Şirket Konumu</h3>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3058.928501740542!2d39.7200!3d41.0039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4065490f1bce4579%3A0x8e9b6f2d50443d91!2sAvrasya%20%C3%9Cniversitesi!5e0!3m2!1str!2str!4v1684932439880" loading="lazy"></iframe>
+        <iframe
+            src="https://www.google.com/maps?q=Avrasya+Üniversitesi+Trabzon&output=embed&z=16"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
     </div>
 
+<?php if ($role === "admin"): ?>
 <!-- Yeni çalışan ekleme -->
-<dialog id="createDlg" style="max-width:420px;width:90%;border:none;border-radius:16px;padding:25px;box-shadow:0 8px 25px rgba(0,0,0,0.25);">
+<dialog id="createDlg">
   <form method="POST" enctype="multipart/form-data">
-    <h3 style="text-align:center;color:#0f172a;margin-bottom:15px;">Yeni Çalışan Ekle</h3>
+    <h3 style="text-align:center;color:#0f172a;margin:0 0 10px;">Yeni Çalışan Ekle</h3>
 
     <input type="text" name="name" placeholder="Ad Soyad" required>
     <input type="text" name="department" placeholder="Departman">
@@ -320,17 +356,17 @@ dialog {
     <input type="text" name="phone" placeholder="Telefon">
     <input type="file" name="photo">
 
-    <div style="display:flex;justify-content:space-between;margin-top:15px;gap:10px;">
-      <button type="submit" name="create" style="flex:1;padding:10px;background:#0ea5e9;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Kaydet</button>
-      <button type="button" onclick="document.getElementById('createDlg').close()" style="flex:1;padding:10px;background:#ef4444;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Kapat</button>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button type="submit" name="create" class="btn" style="flex:1;">Kaydet</button>
+      <button type="button" class="btn red" style="flex:1;" onclick="document.getElementById('createDlg').close()">Kapat</button>
     </div>
   </form>
 </dialog>
 
 <!-- Çalışan düzenleme -->
-<dialog id="editDlg" style="max-width:420px;width:90%;border:none;border-radius:16px;padding:25px;box-shadow:0 8px 25px rgba(0,0,0,0.25);">
+<dialog id="editDlg">
   <form method="POST" enctype="multipart/form-data">
-    <h3 style="text-align:center;color:#0f172a;margin-bottom:15px;">Çalışanı Düzenle</h3>
+    <h3 style="text-align:center;color:#0f172a;margin:0 0 10px;">Çalışanı Düzenle</h3>
 
     <input type="hidden" name="id" id="edit_id">
     <input type="text" name="name" id="edit_name" placeholder="Ad Soyad" required>
@@ -340,9 +376,9 @@ dialog {
     <input type="text" name="phone" id="edit_phone" placeholder="Telefon">
     <input type="file" name="photo">
 
-    <div style="display:flex;justify-content:space-between;margin-top:15px;gap:10px;">
-      <button type="submit" name="update" style="flex:1;padding:10px;background:#0ea5e9;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Kaydet</button>
-      <button type="button" onclick="document.getElementById('editDlg').close()" style="flex:1;padding:10px;background:#ef4444;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Kapat</button>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <button type="submit" name="update" class="btn" style="flex:1;">Kaydet</button>
+      <button type="button" class="btn red" style="flex:1;" onclick="document.getElementById('editDlg').close()">Kapat</button>
     </div>
   </form>
 </dialog>
@@ -358,5 +394,7 @@ dialog {
     document.getElementById('editDlg').showModal();
   }
 </script>
+<?php endif; ?>
+
 </body>
 </html>

@@ -1,24 +1,30 @@
 <?php
-    session_start();
-    include_once "classes/Database.php";
-    include_once "classes/User.php";
+session_start();
+include_once "classes/Database.php";
+include_once "classes/User.php";
 
-    $db = new Database();
-    $conn = $db->conn;
-    $user = new User($conn);
+$db = new Database();
+$conn = $db->conn;
+$user = new User($conn);
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $email = $_POST["email"];
-        $password = $_POST["password"];
-        $role = $_POST["role"];
+// Zaten giriş yaptıysa direkt dashboard
+if (isset($_SESSION["user"])) {
+    header("Location: dashboard.php");
+    exit;
+}
 
-        $loginUser = $user->login($email, $password);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST["email"];
+    $password = $_POST["password"];
 
-        if ($loginUser && $loginUser["role"] == $role) {
-            $_SESSION["user"] = $loginUser;
-            header("Location: dashboard.php");
-        } else {
-            echo "<script>alert('Bilgiler hatalı veya rol yanlış!');</script>";
-        }
+    $loginUser = $user->login($email, $password);
+
+    if ($loginUser) {
+        $_SESSION["user"] = $loginUser;
+        header("Location: dashboard.php");
+        exit;
+    } else {
+        echo "<script>alert('E-posta veya şifre hatalı!');</script>";
     }
+}
 ?>
