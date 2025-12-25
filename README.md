@@ -9,32 +9,30 @@ Amaç; **rol bazlı yetkilendirme**, **veri kalıcılığı**, **CRUD işlemleri
 
 ## 🧱 Klasör Yapısı
 
-manageX_system/
-│
-├── classes/
-│   ├── Database.php
-│   ├── User.php
-│   ├── Employee.php
-│   └── Task.php
-│
-├── uploads/
-│   └── employees/
-│       └── (çalışan fotoğrafları)
-│
-├── appointment.php
-├── appointments_admin.php
-├── dashboard.php
-├── employee.php
-├── employee_view.php
-├── index.php
-├── login.php
-├── logout.php
-├── register.php
-├── tasks.php
-├── map.php
-├── users_admin.php
-│
-└── managex.sql
+- manageX_system ->
+  - classes ->
+    - Database.php
+    - User.php
+    - Employee.php
+    - Task.php
+  
+  - uploads ->
+    - employees ->
+      - (çalışan fotoğrafları)
+  
+  - appointment.php
+  - appointments_admin.php
+  - dashboard.php
+  - employee.php
+  - employee_view.php
+  - index.php
+  - login.php
+  - logout.php
+  - register.php
+  - tasks.php
+  - map.php
+  - users_admin.php
+  - managex.sql
 
 ---
 
