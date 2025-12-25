@@ -7,110 +7,19 @@ Amaç; **rol bazlı yetkilendirme**, **veri kalıcılığı**, **CRUD işlemleri
 
 ---
 
-## 🚀 Özellikler
-
-### 👥 Kullanıcı Sistemi (Register & Login)
-- Yeni hesap oluşturma (Kayıt Ol)
-- Mevcut hesap ile giriş yapma
-- Şifreli giriş sistemi
-- **Rol bazlı yönlendirme**
-  - Yönetici
-  - Çalışan
-  - Misafir
-
----
-
-### 🧾 Çalışan Yönetimi (CRUD)
-- Yönetici ve Admin yetkileri
-- Çalışan ekleme, silme, güncelleme
-- Çalışan detay görüntüleme
-- Çalışan bilgileri:
-  - Ad – Soyad
-  - Departman
-  - Pozisyon
-  - Telefon
-  - E-posta
-  - Fotoğraf (upload)
-
----
-
-### 📅 Randevu Sistemi (Çakışma Kontrollü)
-- Çalışan ve misafir kullanıcılar randevu talep edebilir
-- **Randevu çakışma kontrolü**
-  - Aynı zaman aralığında ikinci randevu alınamaz
-  - Randevular gerçek hayata uygun şekilde bloklanır
-- Kullanıcı randevu durumu:
-  - Bekliyor
-  - Onaylandı
-  - Reddedildi
-- Yönetici randevu onay / red işlemleri
-
----
-
-### 🗂️ Görev Yönetimi Sistemi
-- Yönetici tarafından görev oluşturma
-- Görev özellikleri:
-  - Başlık
-  - Açıklama
-  - Öncelik (Düşük / Orta / Yüksek)
-  - Son tarih
-  - Atanan kullanıcı
-- Görev durumu:
-  - Bekliyor
-  - Yapıldı
-- Filtreleme:
-  - Duruma göre filtreleme
-  - Arama (başlık & açıklama)
-- Görev düzenleme ve silme
-- Rol bazlı yetkilendirme
-  - Misafir görev ekleyemez
-  - Sadece yetkili roller işlem yapabilir
-
----
-
-### 📍 Şirket Konumu & Harita Entegrasyonu
-- Google Maps entegrasyonu
-- Şirket konumu sabit olarak gösterilir.
-- **Tüm kullanıcı rollerine açık**
-
----
-
-### 📊 Dashboard (Kontrol Paneli)
-- Rol bazlı içerik
-- Yönetici & Admin için:
-  - Toplam kullanıcı sayısı
-  - Çalışan sayısı
-  - Bekleyen randevular
-  - Onaylanan randevular
-- Net menü yapısı ve hızlı erişim
-
----
-
-### 🎨 Arayüz & Kullanılabilirlik
-- Özgün ve sade tasarım (hazır template kullanılmadı)
-- Responsive yapı
-- Butonlar ve menüler üzerinden tüm işlemler
-- Değerlendirme sırasında:
-  - Menü yerleşimi
-  - Buton konumu
-  - Buton metinleri
-  - Tema renkleri
-  **kolayca değiştirilebilir**
-
----
-
 ## 🧱 Klasör Yapısı
 
 manageX_system/
 │
 ├── classes/
-│ ├── Database.php
-│ ├── User.php
-│ ├── Employee.php
-│ └── Task.php
+│   ├── Database.php
+│   ├── User.php
+│   ├── Employee.php
+│   └── Task.php
 │
 ├── uploads/
-│ └── employees/
+│   └── employees/
+│       └── (çalışan fotoğrafları)
 │
 ├── appointment.php
 ├── appointments_admin.php
@@ -124,6 +33,7 @@ manageX_system/
 ├── tasks.php
 ├── map.php
 ├── users_admin.php
+│
 └── managex.sql
 
 ---
