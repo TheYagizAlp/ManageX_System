@@ -7,35 +7,6 @@ Amaç; **rol bazlı yetkilendirme**, **veri kalıcılığı**, **CRUD işlemleri
 
 ---
 
-## 🧱 Klasör Yapısı
-
-- manageX_system ->
-  - classes ->
-    - Database.php
-    - User.php
-    - Employee.php
-    - Task.php
-  
-  - uploads ->
-    - employees ->
-      - (çalışan fotoğrafları)
-  
-  - appointment.php
-  - appointments_admin.php
-  - dashboard.php
-  - employee.php
-  - employee_view.php
-  - index.php
-  - login.php
-  - logout.php
-  - register.php
-  - tasks.php
-  - map.php
-  - users_admin.php
-  - managex.sql
-
----
-
 ## ⚙️ Kullanılan Teknolojiler
 
 **PHP** --> Backend geliştirme, OOP yapı 
@@ -49,28 +20,27 @@ Amaç; **rol bazlı yetkilendirme**, **veri kalıcılığı**, **CRUD işlemleri
 ## 🧠 Rol Bazlı Yetkiler
 
 - 👑 **Admin**
-  - Kullanıcı yönetimi (CRUD)
-  - Çalışan yönetimi
-  - Randevu yönetimi
-  - Görev yönetimi
-  - İstatistikleri görür
+  - Kullanıcı yönetimine erişim. (CRUD)
+  - Çalışan yönetimine erişim.
+  - Randevu yönetimine erişim.
+  - Görev yönetimine erişim.
+  - İstatistikleri görür.
 
 - 🧍 **Çalışan**
-  - Randevu talebi oluşturabilir
-  - Görevleri görüntüler ve işaretleme yapabilir
-  - Harita ve yol tarifi alabilir
+  - Randevu talebi oluşturabilir.
+  - Görevleri görüntüler ve işaretleme yapabilir.
+  - Harita ve yol tarifi alabilir.
 
 - 🙋 **Misafir**
-  - Randevu talebi oluşturabilir
-  - Harita ve yol tarifi alabilir
+  - Randevu talebi oluşturabilir.
+  - Harita ve yol tarifi alabilir.
 
 ---
 
 ## 🗄️ Veritabanı
 
-- Veriler MySQL üzerinde tutulur
+- Veriler MySQL üzerinde tutulur.
 - Veritabanı adı: **managex**
-- SQL yedeği: managex.sql
 
 ---
 
