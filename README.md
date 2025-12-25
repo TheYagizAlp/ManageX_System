@@ -54,9 +54,9 @@ Amaç; **rol bazlı yetkilendirme**, **veri kalıcılığı**, **CRUD işlemleri
 
 ## 👨‍💻 Geliştirici
 
-**Yağız Alp Sürmeneli**  
-Trabzon Avrasya Üniversitesi  
-Bilgisayar Programcılığı  
+- **Yağız Alp Sürmeneli**  
+- Trabzon Avrasya Üniversitesi  
+- Bilgisayar Programcılığı  
 
 **© 2025 ManageX System**
 
